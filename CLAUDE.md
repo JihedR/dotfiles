@@ -55,7 +55,7 @@ Everything is themed after the Watch Dogs ctOS look, from `~/ctOS/common/Theme.q
 
 - Font: JetBrainsMono Nerd Font (Light for big labels). Square corners, 1px borders, uppercase labels, terse `//`-separated text. The "CT|OS" mark is a filled `ctos` block with `bg` text "CT" followed by thin "OS".
 - Wallpapers: `ctos-v1.png` (centred logo), `ctos-v2.png` (small logo bottom-left, in use).
-- Reuse these tokens in any new config instead of inventing colors. The Hyprland border gradient in `hyprland.lua` is still the default cyan/green and hasn't been themed yet.
+- Reuse these tokens in any new config instead of inventing colors. Hyprland window borders use `ctos` (focused) and `secondary` at 60% alpha (unfocused); rounding is still the default 10.
 
 ## Lock and idle
 

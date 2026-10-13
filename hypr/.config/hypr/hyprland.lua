@@ -99,9 +99,10 @@ hl.config({
 
         border_size = 2,
 
+        -- ctOS palette (see CLAUDE.md): ctos #d9d9d9 focused, secondary #7a7a7a dimmed
         col = {
-            active_border   = { colors = {"rgba(33ccffee)", "rgba(00ff99ee)"}, angle = 45 },
-            inactive_border = "rgba(595959aa)",
+            active_border   = "rgb(d9d9d9)",
+            inactive_border = "rgba(7a7a7a99)",
         },
 
         -- Set to true to enable resizing windows by clicking and dragging on borders and gaps
