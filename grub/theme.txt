@@ -1,0 +1,94 @@
+# ctOS GRUB theme. Palette and fonts from CLAUDE.md ("ctOS style").
+# Build with grub/build.sh; font names must match what it prints.
+
+title-text: ""
+desktop-image: "background.png"
+desktop-color: "#0e0e0e"
+
+terminal-box: "term_*.png"
+terminal-font: "JetBrainsMono NFM Regular 18"
+terminal-left: "15%"
+terminal-top: "15%"
+terminal-width: "70%"
+terminal-height: "70%"
+terminal-border: "1"
+
+message-font: "JetBrainsMono NFM Regular 18"
+message-color: "#ffffff"
+message-bg-color: "#0e0e0e"
+
+# ── header, above the menu box ──────────────────────────────
++ label {
+    left = 33%
+    top = 34%-82
+    width = 34%
+    height = 34
+    text = "BOOT SEQUENCE"
+    font = "JetBrainsMono NFM Light Regular 24"
+    color = "#d9d9d9"
+    align = "left"
+}
++ label {
+    left = 33%
+    top = 34%-38
+    width = 34%
+    height = 18
+    text = "SELECT TARGET // CTOS"
+    font = "JetBrainsMono NFM Regular 12"
+    color = "#7a7a7a"
+    align = "left"
+}
+
+# ── menu: square box, 1px ctos border; selection is a filled ctos block ──
++ boot_menu {
+    left = 33%
+    top = 34%
+    width = 34%
+    height = 32%
+
+    menu_pixmap_style = "menu_*.png"
+
+    item_font = "JetBrainsMono NFM Regular 18"
+    item_color = "#cacaca"
+    selected_item_font = "JetBrainsMono NFM Regular 18"
+    selected_item_color = "#0e0e0e"
+    selected_item_pixmap_style = "select_*.png"
+
+    item_height = 36
+    item_padding = 14
+    item_spacing = 4
+
+    icon_width = 0
+    icon_height = 0
+    item_icon_space = 0
+
+    scrollbar = true
+    scrollbar_width = 2
+    scrollbar_frame = "scroll_frame_*.png"
+    scrollbar_thumb = "scroll_thumb_*.png"
+}
+
+# ── countdown, below the box ────────────────────────────────
++ label {
+    id = "__timeout__"
+    left = 33%
+    top = 66%+16
+    width = 34%
+    height = 18
+    text = "AUTO-BOOT // %d S"
+    font = "JetBrainsMono NFM Regular 12"
+    color = "#1bfd9c"
+    align = "left"
+}
+
+# ── key hint, bottom centre ─────────────────────────────────
++ label {
+    left = 0
+    top = 100%-40
+    width = 100%
+    height = 18
+    text = "ENTER BOOT // E EDIT // C CONSOLE"
+    font = "JetBrainsMono NFM Regular 12"
+    color = "#7a7a7a"
+    align = "center"
+}

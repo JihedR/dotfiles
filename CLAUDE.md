@@ -24,6 +24,7 @@ The repo lives at `~/dotfiles`. Each top-level directory is a stow package that 
 | `kitty`     | `~/.config/kitty/kitty.conf`, `themes/monoglow_z.conf` |
 | `fastfetch` | `~/.config/fastfetch/` (dedsec logo)                  |
 | `starship`  | `~/.config/starship.toml` (bash prompt; `~/.bashrc` itself is not in the repo and just runs `eval "$(starship init bash)"`) |
+| `grub`      | **not a stow package** (`.stow-local-ignore` makes `stow grub` a no-op). ctOS GRUB theme source; built with `grub/build.sh` and copied to `/boot/grub/themes/ctos`, see "GRUB theme" below |
 
 - Install a package with `cd ~/dotfiles && stow <pkg>`. Several packages share `~/.config/hypr`, so that directory is real and its files are individual symlinks; don't let stow fold it.
 - New config goes in its own package (one package per program); add files in the repo and restow, don't edit the target outside the repo.
@@ -87,6 +88,14 @@ The graphical session is on **tty3**.
 - `/etc/grub.d/31_windows_bootnext` (no package owns it) adds the single Windows entry. It finds the entry by label + ESP PARTUUID, so it survives renumbering, and if the entry is missing it adds nothing. Its menu id is `efi-bootnext-windows`.
 - The installer's `/etc/grub.d/45_eos_windows` (a chainload entry) was deleted. Never re-add it, and never enable os-prober.
 - Regenerate with `sudo grub-mkconfig -o /boot/grub/grub.cfg`. A backup of the pre-cleanup state is in `~/grub-backup-2026-10-13/`.
+
+### GRUB theme
+
+- ctOS theme at `/boot/grub/themes/ctos`, enabled by `GRUB_THEME="/boot/grub/themes/ctos/theme.txt"` in `/etc/default/grub` (the only line the theme changed there). `GRUB_BACKGROUND` (EndeavourOS splash) is still set; `00_header` ignores it while `GRUB_THEME` is set and uses it again if the theme is removed. The theme doesn't touch menu entries or the Windows BootNext setup.
+- Source: `grub/theme.txt` + `grub/build.sh`, which writes `grub/build/ctos/` (gitignored): `ctos-v2.png` at 1920x1080, 1x1 9-slice PNGs, and JetBrains Mono `.pf2` fonts. `build.sh` prints the font names; `theme.txt` must use them exactly (`JetBrainsMono NFM Regular 12/18`, `JetBrainsMono NFM Light Regular 24`).
+- GRUB can't read `$HOME` (separate subvolume), so the theme is **copied**, not stowed. Update: `grub/build.sh`, then `sudo install -m 644 ~/dotfiles/grub/build/ctos/* /boot/grub/themes/ctos/`. No `grub-mkconfig` needed unless a `.pf2` is added, removed or renamed (`00_header` writes a `loadfont` line per `.pf2`). Never `grub-install` for theme changes.
+- Pre-theme backup (`/etc/default/grub`, `grub.cfg`): `~/grub-backup-2026-10-13-theme/`.
+- **Revert**: `sudo cp ~/grub-backup-2026-10-13-theme/grub /etc/default/grub && sudo grub-mkconfig -o /boot/grub/grub.cfg` (or comment out `GRUB_THEME`); optionally `sudo rm -r /boot/grub/themes/ctos`. If the menu is unreadable at boot, wait: the default entry still boots after the 5 s timeout. For another entry, press `c`, run `terminal_output console`, Esc (plain text menu). For Windows, the firmware's one-time boot menu (real Windows Boot Manager on the HP SSD) avoids GRUB entirely.
 
 ## Suspend: masked, do not touch
 
