@@ -1,0 +1,10 @@
+# ctOS greeter (Quickshell in cage). /etc/greetd/config.toml symlinks here.
+# Fallback: ln -sf agreety.toml /etc/greetd/config.toml (see CLAUDE.md).
+
+[terminal]
+vt = 1
+
+[default_session]
+# cage -s keeps Ctrl+Alt+Fn VT switching (needed for recovery)
+command = "env CTOS_MODE=kiosk cage -s -d -- quickshell --path /opt/ctos/greeter.qml"
+user = "greeter"

@@ -1,0 +1,2 @@
+# Not a stow package: files are copied to /etc/greetd, /etc/ctos and /var/lib/ctos (see CLAUDE.md).
+.*

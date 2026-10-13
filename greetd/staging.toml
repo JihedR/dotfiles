@@ -1,0 +1,12 @@
+# One-off test of the real greetd + cage + greeter user on VT5, without
+# touching the display manager. Run as root straight from the repo:
+#   sudo greetd --config ~/dotfiles/greetd/staging.toml
+# Logging in runs a 5 s dummy session, then the greeter comes back.
+# Ctrl+Alt+F2 back to Hyprland, Ctrl+C stops greetd.
+
+[terminal]
+vt = 5
+
+[default_session]
+command = "env CTOS_MODE=kiosk CTOS_CONFIG=/etc/ctos/greeter.staging.json cage -s -d -- quickshell --path /opt/ctos/greeter.qml"
+user = "greeter"
