@@ -37,6 +37,9 @@ The repo lives at `~/dotfiles`. Each top-level directory is a stow package that 
 - Autostart in `hl.on("hyprland.start")` uses `uwsm app -- <cmd>` so each app gets its own systemd scope. Currently: waybar, hyprpaper, hypridle.
 - **swaync and hyprpolkitagent run as systemd user services** (`systemctl --user` enabled). Never autostart them from `hyprland.lua`; that would start duplicates.
 - **Workspace 5 is a floating workspace**: every window that opens on or is moved to 5 floats; windows it floated go back to tiled when they leave. It's done with a `float-ws5` window rule plus `window.open` / `window.move_to_workspace` hooks, because `float` is a static rule effect (only applied at open) and the rule's `workspace` match misses windows sent to 5 by exec or workspace rules. Other workspaces are unaffected.
+  - On 5, focus is click-only: a `workspace.active` hook sets `input.follow_mouse` to 2 there and back to 1 (hover focus) elsewhere, since the option has no per-workspace form. Don't hard-code `follow_mouse` anywhere else; the `hl.config` input block's value is overridden by the hook.
+  - A focused floating window on 5 is raised (`window.active` → `hl.dsp.window.alter_zorder({ mode = "top" })`).
+- **ALT+Tab / ALT+SHIFT+Tab** (all workspaces): `cycle_next({ next = true/false })` on the current workspace, then `alter_zorder` top on the newly focused window.
 - `misc.allow_session_lock_restore = true` is required for the lock-screen recovery below. Keep it.
 
 ## ctOS style

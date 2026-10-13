@@ -276,6 +276,16 @@ hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))    -- dwindle only
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("loginctl lock-session")) -- hypridle runs lock_cmd
 
+-- Alt+Tab / Alt+Shift+Tab: cycle windows on the current workspace and raise the selected one
+local function cycleAndRaise(forward)
+    return function()
+        hl.dispatch(hl.dsp.window.cycle_next({ next = forward }))
+        hl.dispatch(hl.dsp.window.alter_zorder({ mode = "top" }))
+    end
+end
+hl.bind("ALT + Tab",         cycleAndRaise(true))
+hl.bind("ALT + SHIFT + Tab", cycleAndRaise(false))
+
 -- Move focus with mainMod + arrow keys
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
 hl.bind(mainMod .. " + right", hl.dsp.focus({ direction = "right" }))
@@ -475,6 +485,21 @@ hl.on("window.move_to_workspace", function(w, ws)
 end)
 hl.on("window.destroy", function(w)
     floatedByWs[w.address] = nil
+end)
+
+-- Desktop-style focus on ws 5: click to focus (hover doesn't), and a focused floating
+-- window is raised. follow_mouse has no per-workspace form, so switch it on workspace change.
+local function applyFocusMode(ws)
+    local onFloatWs = ws ~= nil and ws.id == floatWs
+    hl.config({ input = { follow_mouse = onFloatWs and 2 or 1 } })
+end
+hl.on("workspace.active", applyFocusMode)
+applyFocusMode(hl.get_active_workspace()) -- also on reload, which resets follow_mouse to 1
+
+hl.on("window.active", function(w)
+    if w.floating and w.workspace ~= nil and w.workspace.id == floatWs then
+        hl.dispatch(hl.dsp.window.alter_zorder({ mode = "top", window = w }))
+    end
 end)
 -- Screenshots
 hl.bind("Print", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy'))
