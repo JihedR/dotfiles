@@ -16,18 +16,16 @@
   "modules": [
     {
       "type": "title",
-      "format": "{#white}tom-smith{#}{#blue}@{#}{#green}au-south-east-2-014-493{#}"
+      "format": "{#white}{user-name}{#}{#blue}@{#}{#green}{host-name}{#}"
     },
     "separator",
     {
       "type": "os",
-      "key": "OS",
-      "format": "ctOS-0.1.0-a"
+      "key": "OS"
     },
     {
       "type": "kernel",
-      "key": "Kernel",
-      "format": "blume-krn-1.0.8"
+      "key": "Kernel"
     },
     "uptime",
     "packages",
