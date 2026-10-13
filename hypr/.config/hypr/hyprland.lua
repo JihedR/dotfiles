@@ -438,44 +438,6 @@ hl.window_rule({
     float = true,
     pin   = true,
 })
-
--- Workspace 5 is a floating workspace.
--- float is a static effect (only applied when a window opens), and the rule only
--- matches windows opened while on 5 (not ones sent there by exec/workspace rules),
--- so the event hooks cover windows that land on 5 any other way.
-local floatWs = 5
-local floatedByWs = {} -- addresses floated because of ws 5; re-tiled when they leave
-
-hl.window_rule({
-    name  = "float-ws5",
-    match = { workspace = tostring(floatWs) },
-
-    float = true,
-})
-hl.on("window.open", function(w)
-    if w.workspace ~= nil and w.workspace.id == floatWs then
-        if not w.floating then
-            hl.dispatch(hl.dsp.window.float({ action = "set", window = w }))
-        end
-        floatedByWs[w.address] = true
-    end
-end)
-hl.on("window.move_to_workspace", function(w, ws)
-    if ws.id == floatWs then
-        if not w.floating then
-            hl.dispatch(hl.dsp.window.float({ action = "set", window = w }))
-            floatedByWs[w.address] = true
-        end
-    elseif floatedByWs[w.address] then
-        floatedByWs[w.address] = nil
-        if w.floating then
-            hl.dispatch(hl.dsp.window.float({ action = "unset", window = w }))
-        end
-    end
-end)
-hl.on("window.destroy", function(w)
-    floatedByWs[w.address] = nil
-end)
 -- Screenshots
 hl.bind("Print", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy'))
 hl.bind("SHIFT + Print", hl.dsp.exec_cmd('mkdir -p ~/Pictures/Screenshots && grim -g "$(slurp)" - | tee ~/Pictures/Screenshots/$(date +%F_%H-%M-%S).png | wl-copy'))
