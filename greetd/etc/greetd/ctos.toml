@@ -7,5 +7,6 @@ vt = 1
 [default_session]
 # cage -s keeps Ctrl+Alt+Fn VT switching (needed for recovery).
 # Quickshell's output goes to a log instead of tty1 (kept out of the quiet boot).
+# Not installed yet: /etc/greetd/ctos.toml still has the plain command (see CLAUDE.md).
 command = "env CTOS_MODE=kiosk cage -s -d -- sh -c 'exec quickshell --path /opt/ctos/greeter.qml >/var/lib/ctos/greeter.log 2>&1'"
 user = "greeter"
