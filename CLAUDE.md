@@ -79,7 +79,7 @@ The graphical session is on **tty1** (greetd `vt = 1`).
 ## Display manager (greetd)
 
 - **greetd** (`greetd.service`, aliased `display-manager.service`) on tty1 runs the ctOS greeter as user `greeter`: `env CTOS_MODE=kiosk cage -s -d -- quickshell --path /opt/ctos/greeter.qml`. `cage -s` keeps Ctrl+Alt+Fn working; recovery depends on it.
-- The greeter code is the ctOS fork `~/ctOS` (`github.com/jihedr/ctOS`), rsynced to `/opt/ctos`. Change the code in the fork (commits there), then re-sync: `sudo rsync -ahq --exclude=.git --exclude=.assets --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r ~/ctOS/ /opt/ctos/`. Don't use the fork's `install.sh` (interactive wizard, writes its own config).
+- The greeter code is the ctOS fork `~/ctOS` (`github.com/jihedr/ctOS`), rsynced to `/opt/ctos`. Change the code in the fork (commits there), then re-sync: `sudo rsync -ahq --exclude=.git --exclude=.assets --chown=root:root --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r ~/ctOS/ /opt/ctos/`. Don't use the fork's `install.sh` (interactive wizard, writes its own config).
 - Config source is `greetd/` in this repo:
   - `etc/greetd/ctos.toml` and `agreety.toml` go in `/etc/greetd/`. `/etc/greetd/config.toml` is a **symlink** to one of them.
   - `etc/ctos/greeter.config.json` goes in `/etc/ctos/`. It sets the fake identity/status and `launchOverride` (= the `hyprland-uwsm.desktop` Exec).
