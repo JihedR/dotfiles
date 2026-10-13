@@ -84,7 +84,7 @@ The graphical session is on **tty3**.
 
 - Menu: EndeavourOS (default), Advanced options (`linux` + `linux-lts`), UEFI Firmware Settings, `Windows Boot Manager (EFI BootNext)`, EndeavourOS snapshots.
 - **Windows has BitLocker. It must only boot via EFI BootNext, never chainloaded by GRUB.** Two Windows Boot Managers exist in NVRAM. The real one is on the HP SSD ESP (sda1, PARTUUID `556e68b3-…`, currently Boot0000). The Toshiba one (sdc1) is a leftover.
-- `/etc/default/grub` sets `GRUB_DISABLE_OS_PROBER=true` and `GRUB_DISABLE_BOOTNEXT=true`. The second turns off grub's `31_efi_bootnext`, which listed every NVRAM entry and ran os-prober.
+- `/etc/default/grub` sets `GRUB_TIMEOUT=10` (menu style), `GRUB_DISABLE_OS_PROBER=true` and `GRUB_DISABLE_BOOTNEXT=true`. The second turns off grub's `31_efi_bootnext`, which listed every NVRAM entry and ran os-prober.
 - `/etc/grub.d/31_windows_bootnext` (no package owns it) adds the single Windows entry. It finds the entry by label + ESP PARTUUID, so it survives renumbering, and if the entry is missing it adds nothing. Its menu id is `efi-bootnext-windows`.
 - The installer's `/etc/grub.d/45_eos_windows` (a chainload entry) was deleted. Never re-add it, and never enable os-prober.
 - Regenerate with `sudo grub-mkconfig -o /boot/grub/grub.cfg`. A backup of the pre-cleanup state is in `~/grub-backup-2026-10-13/`.
@@ -95,7 +95,7 @@ The graphical session is on **tty3**.
 - Source: `grub/theme.txt` + `grub/build.sh`, which writes `grub/build/ctos/` (gitignored): `ctos-v2.png` at 1920x1080, 1x1 9-slice PNGs, and JetBrains Mono `.pf2` fonts. `build.sh` prints the font names; `theme.txt` must use them exactly (`JetBrainsMono NFM Regular 12/18`, `JetBrainsMono NFM Light Regular 24`).
 - GRUB can't read `$HOME` (separate subvolume), so the theme is **copied**, not stowed. Update: `grub/build.sh`, then `sudo install -m 644 ~/dotfiles/grub/build/ctos/* /boot/grub/themes/ctos/`. No `grub-mkconfig` needed unless a `.pf2` is added, removed or renamed (`00_header` writes a `loadfont` line per `.pf2`). Never `grub-install` for theme changes.
 - Pre-theme backup (`/etc/default/grub`, `grub.cfg`): `~/grub-backup-2026-10-13-theme/`.
-- **Revert**: `sudo cp ~/grub-backup-2026-10-13-theme/grub /etc/default/grub && sudo grub-mkconfig -o /boot/grub/grub.cfg` (or comment out `GRUB_THEME`); optionally `sudo rm -r /boot/grub/themes/ctos`. If the menu is unreadable at boot, wait: the default entry still boots after the 5 s timeout. For another entry, press `c`, run `terminal_output console`, Esc (plain text menu). For Windows, the firmware's one-time boot menu (real Windows Boot Manager on the HP SSD) avoids GRUB entirely.
+- **Revert**: `sudo cp ~/grub-backup-2026-10-13-theme/grub /etc/default/grub && sudo grub-mkconfig -o /boot/grub/grub.cfg` (or comment out `GRUB_THEME`); optionally `sudo rm -r /boot/grub/themes/ctos`. If the menu is unreadable at boot, wait: the default entry still boots after the 10 s timeout. For another entry, press `c`, run `terminal_output console`, Esc (plain text menu). For Windows, the firmware's one-time boot menu (real Windows Boot Manager on the HP SSD) avoids GRUB entirely.
 
 ## Suspend: masked, do not touch
 
