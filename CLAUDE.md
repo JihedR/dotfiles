@@ -8,6 +8,7 @@ Personal desktop config for one machine. Read this before touching anything.
 - **GPU:** NVIDIA GTX 1660 Ti (TU116), `nvidia-open` driver (615.x). `nvidia_drm` modeset and fbdev are on (driver defaults, no modprobe.d file).
 - **Kernels:** both `linux` and `linux-lts` are installed, each with its own headers and matching NVIDIA module: `nvidia-open` (for `linux`) and `nvidia-open-lts` (for `linux-lts`). Keep the pairs in sync on upgrades. A kernel without its matching NVIDIA module boots with no working display.
 - **Compositor:** Hyprland 0.56, **Lua config** (`hyprland.lua`, not `hyprland.conf`), launched through **uwsm** (`hyprland-uwsm.desktop`).
+- **Login:** greetd with the ctOS greeter (Quickshell in cage); plasma-login is installed but disabled. See "Display manager (greetd)".
 
 ## Stow layout
 
@@ -25,6 +26,7 @@ The repo lives at `~/dotfiles`. Each top-level directory is a stow package that 
 | `fastfetch` | `~/.config/fastfetch/` (dedsec logo)                  |
 | `starship`  | `~/.config/starship.toml` (bash prompt; `~/.bashrc` itself is not in the repo and just runs `eval "$(starship init bash)"`) |
 | `grub`      | **not a stow package** (`.stow-local-ignore` makes `stow grub` a no-op). ctOS GRUB theme source; built with `grub/build.sh` and copied to `/boot/grub/themes/ctos`, see "GRUB theme" below |
+| `greetd`    | **not a stow package** (same `.stow-local-ignore` trick). greetd configs and ctOS greeter config, copied to `/etc/greetd`, `/etc/ctos`, `/var/lib/ctos`, see "Display manager (greetd)" below |
 
 - Install a package with `cd ~/dotfiles && stow <pkg>`. Several packages share `~/.config/hypr`, so that directory is real and its files are individual symlinks; don't let stow fold it.
 - New config goes in its own package (one package per program); add files in the repo and restow, don't edit the target outside the repo.
@@ -66,13 +68,39 @@ Everything is themed after the Watch Dogs ctOS look, from `~/ctOS/common/Theme.q
 
 ### Lock-screen recovery
 
-The graphical session is on **tty3**.
+The graphical session is on **tty1** (greetd `vt = 1`).
 
-1. Ctrl+Alt+F4 and log in on the console.
+1. Ctrl+Alt+F2 and log in on the console.
 2. If hyprlock **hung**: `pkill -USR1 hyprlock` (SIGUSR1 unlocks).
    If hyprlock **crashed** (red "lockscreen died" screen): `hyprctl --instance 0 dispatch 'hl.dsp.exec_cmd("hyprlock")'` (needs `allow_session_lock_restore`).
    Last resort, loses the session: `hyprctl --instance 0 dispatch 'hl.dsp.exit()'`.
-3. Ctrl+Alt+F3 to go back.
+3. Ctrl+Alt+F1 to go back.
+
+## Display manager (greetd)
+
+- **greetd** (`greetd.service`, aliased `display-manager.service`) on tty1 runs the ctOS greeter as user `greeter`: `env CTOS_MODE=kiosk cage -s -d -- quickshell --path /opt/ctos/greeter.qml`. `cage -s` keeps Ctrl+Alt+Fn working; recovery depends on it.
+- The greeter code is the ctOS fork `~/ctOS` (`github.com/jihedr/ctOS`), rsynced to `/opt/ctos`. Change the code in the fork (commits there), then re-sync: `sudo rsync -ahq --exclude=.git --exclude=.assets --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r ~/ctOS/ /opt/ctos/`. Don't use the fork's `install.sh` (interactive wizard, writes its own config).
+- Config source is `greetd/` in this repo:
+  - `etc/greetd/ctos.toml` and `agreety.toml` go in `/etc/greetd/`. `/etc/greetd/config.toml` is a **symlink** to one of them.
+  - `etc/ctos/greeter.config.json` goes in `/etc/ctos/`. It sets the fake identity/status and `launchOverride` (= the `hyprland-uwsm.desktop` Exec).
+  - `var/lib/ctos/greeter.state.json` goes in `/var/lib/ctos/`, owned by `greeter`; the greeter rewrites it.
+  - Install a change with `sudo install -m644 ~/dotfiles/greetd/etc/... /etc/...`, then `sudo systemctl restart greetd`. Restarting greetd kills a session started from it, so restart from a tty, not from Hyprland.
+- Test without root inside Hyprland: `CTOS_DEBUG=1 CTOS_MODE=test CTOS_CONFIG=$HOME/dotfiles/greetd/etc/ctos/greeter.config.json quickshell --path ~/ctOS/greeter.qml` (password `password`, Esc quits). For real greetd on VT5 without touching the display manager: `sudo greetd --config ~/dotfiles/greetd/staging.toml`. That needs `/etc/ctos/greeter.staging.json`; remove it afterwards.
+- The greeter doesn't unlock KWallet (plasma-login's PAM did via `pam_kwallet5`).
+- Pre-switch snapshot: Timeshift "before greetd/ctOS greeter".
+
+### Login recovery
+
+Do these from a console: **Ctrl+Alt+F2**, log in as jihed.
+
+- **A. ctOS greeter broken, use the text login (agreety):**
+  `sudo ln -sf agreety.toml /etc/greetd/config.toml && sudo systemctl restart greetd`, then Ctrl+Alt+F1 to log in.
+  Undo: `sudo ln -sf ctos.toml /etc/greetd/config.toml && sudo systemctl restart greetd`.
+- **B. Back to plasma-login:**
+  `sudo systemctl disable greetd && sudo systemctl enable plasmalogin && sudo reboot`.
+  Undo: `sudo systemctl disable plasmalogin && sudo systemctl enable greetd && sudo reboot`.
+- **C. No console reachable** (Ctrl+Alt+F2 does nothing): hard reboot. In GRUB press `e` on EndeavourOS, add `systemd.unit=multi-user.target` at the end of the `linux` line, then Ctrl+X. The machine boots to a text login with no display manager; log in and run A or B.
+- **D. Last resort:** in GRUB, pick "EndeavourOS snapshots" and boot the "before greetd/ctOS greeter" snapshot.
 
 ## Snapshots
 
