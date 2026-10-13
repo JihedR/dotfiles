@@ -365,6 +365,78 @@ hl.window_rule({
     move  = "20 monitor_h-120",
     float = true,
 })
+
+-- App workspaces (kitty intentionally has no rule)
+hl.window_rule({
+    name  = "zen-ws1",
+    match = { class = "^zen$", title = "negative:^Picture-in-Picture$" },
+
+    workspace = "1",
+})
+hl.window_rule({
+    name  = "burp-ws3",
+    match = { class = "^install4j-burp-StartBurp$" },
+
+    workspace = "3",
+})
+hl.window_rule({
+    name  = "discord-ws4",
+    match = { class = "^discord$" },
+
+    workspace = "4 silent",
+})
+
+-- Floating utilities
+hl.window_rule({
+    name  = "float-pavucontrol",
+    match = { class = "^org\\.pulseaudio\\.pavucontrol$" },
+
+    float  = true,
+    size   = {900, 600},
+    center = true,
+})
+hl.window_rule({
+    -- File pickers go through xdg-desktop-portal-gtk
+    name  = "float-portal-files",
+    match = { class = "^xdg-desktop-portal-(gtk|kde)$" },
+
+    float  = true,
+    size   = {1000, 650},
+    center = true,
+})
+hl.window_rule({
+    -- Exact titles only: a loose "^Open.*" would also catch browser tabs
+    name  = "float-file-dialogs",
+    match = { title = "^(Open File|Open Files|Open Folder|Save As|Save File|File Upload)$" },
+
+    float  = true,
+    center = true,
+})
+hl.window_rule({
+    name  = "float-modals",
+    match = { modal = true },
+
+    float  = true,
+    center = true,
+})
+hl.window_rule({
+    -- Main window is "Burp Suite Community Edition v2026.9.2[ - project]"; everything else is a popup
+    name  = "float-burp-popups",
+    match = {
+        class = "^install4j-burp-StartBurp$",
+        title = "negative:^Burp Suite (Community Edition|Professional).*",
+    },
+
+    float  = true,
+    center = true,
+})
+hl.window_rule({
+    name  = "zen-pip",
+    match = { class = "^zen$", title = "^Picture-in-Picture$" },
+
+    float = true,
+    pin   = true,
+})
 -- Screenshots
 hl.bind("Print", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy'))
 hl.bind("SHIFT + Print", hl.dsp.exec_cmd('mkdir -p ~/Pictures/Screenshots && grim -g "$(slurp)" - | tee ~/Pictures/Screenshots/$(date +%F_%H-%M-%S).png | wl-copy'))
