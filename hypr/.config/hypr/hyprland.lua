@@ -53,6 +53,7 @@ local menu = "rofi -show drun"
 -- (https://wiki.hypr.land/Useful-Utilities/Systemd-start/)
 hl.on("hyprland.start", function ()
     hl.exec_cmd("uwsm app -- waybar")
+    hl.exec_cmd("uwsm app -- hyprpaper")
 end)
 
 
