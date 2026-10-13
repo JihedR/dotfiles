@@ -36,6 +36,7 @@ The repo lives at `~/dotfiles`. Each top-level directory is a stow package that 
 - `hypridle.conf`, `hyprlock.conf` and `hyprpaper.conf` are still **hyprlang**, not Lua.
 - Autostart in `hl.on("hyprland.start")` uses `uwsm app -- <cmd>` so each app gets its own systemd scope. Currently: waybar, hyprpaper, hypridle.
 - **swaync and hyprpolkitagent run as systemd user services** (`systemctl --user` enabled). Never autostart them from `hyprland.lua`; that would start duplicates.
+- **Workspace 5 is a floating workspace**: every window that opens on or is moved to 5 floats; windows it floated go back to tiled when they leave. It's done with a `float-ws5` window rule plus `window.open` / `window.move_to_workspace` hooks, because `float` is a static rule effect (only applied at open) and the rule's `workspace` match misses windows sent to 5 by exec or workspace rules. Other workspaces are unaffected.
 - `misc.allow_session_lock_restore = true` is required for the lock-screen recovery below. Keep it.
 
 ## ctOS style
