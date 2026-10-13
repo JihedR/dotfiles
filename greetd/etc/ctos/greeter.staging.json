@@ -9,9 +9,8 @@
       "cage"
     ],
     "launchOverride": [
-      "sh",
-      "-c",
-      "sleep 5"
+      "sleep",
+      "5"
     ],
     "fakeIdentity": {
       "id": "DSC-1000",

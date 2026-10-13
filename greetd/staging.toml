@@ -2,6 +2,8 @@
 # touching the display manager. Run as root straight from the repo:
 #   sudo greetd --config ~/dotfiles/greetd/staging.toml
 # Logging in runs a 5 s dummy session, then the greeter comes back.
+# (greetd joins the launch command with spaces before running it through sh,
+# so launch arguments must not contain spaces.)
 # Ctrl+Alt+F2 back to Hyprland, Ctrl+C stops greetd.
 # The greeter's output (incl. Quickshell's greetd debug log) goes to
 # /tmp/ctos-greeter.log, which outlives the greeter session.
