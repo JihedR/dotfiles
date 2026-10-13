@@ -97,7 +97,7 @@ hl.config({
         gaps_in  = 3,
         gaps_out = 5,
 
-        border_size = 2,
+        border_size = 1,
 
         -- ctOS palette (see CLAUDE.md): ctos #d9d9d9 focused, secondary #7a7a7a dimmed
         col = {
@@ -115,7 +115,7 @@ hl.config({
     },
 
     decoration = {
-        rounding       = 10,
+        rounding       = 0,
         rounding_power = 2,
 
         -- Change transparency of focused and unfocused windows
