@@ -1,0 +1,64 @@
+# Starship prompt - ctOS style (https://starship.rs/config/)
+# palette from ~/ctOS/common/Theme.qml, see CLAUDE.md
+#
+#   jihed@host ~/dotfiles //  master [!?] // 4s
+#   >
+#
+# ">" turns red when the last command failed
+
+"$schema" = "https://starship.rs/config-schema.json"
+
+add_newline = true  # blank line before each prompt
+palette = "ctos"
+
+format = """
+$username$hostname $directory$git_branch$git_status$cmd_duration
+$character"""
+
+[palettes.ctos]
+bg        = "#0e0e0e"
+bg_bright = "#202020"
+ctos      = "#d9d9d9"
+text      = "#ffffff"
+text_dim  = "#cacaca"
+secondary = "#7a7a7a"
+accent    = "#1bfd9c"
+error     = "#fc3e38"
+
+[username]
+show_always = true
+format = "[$user]($style)"
+style_user = "bold ctos"
+style_root = "bold error"
+
+[hostname]
+ssh_only = false
+format = "[@$hostname]($style)"
+style = "bold ctos"
+
+[directory]
+truncation_length = 0     # full path like \w
+truncate_to_repo = false
+format = "[$path]($style)[$read_only]($read_only_style)"
+style = "text"
+read_only = " RO"
+read_only_style = "error"
+
+[git_branch]
+format = "[ // ](secondary)[$symbol$branch(:$remote_branch)]($style)"
+symbol = " "
+style = "accent"
+
+[git_status]
+format = "([ \\[$all_status$ahead_behind\\]]($style))"
+style = "text_dim"
+
+[cmd_duration]
+min_time = 2000
+format = "[ // ](secondary)[$duration]($style)"
+style = "secondary"
+
+[character]
+format = "$symbol "
+success_symbol = "[>](bold ctos)"
+error_symbol = "[>](bold error)"

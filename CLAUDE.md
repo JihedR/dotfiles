@@ -23,6 +23,7 @@ The repo lives at `~/dotfiles`. Each top-level directory is a stow package that 
 | `rofi`      | `~/.config/rofi/` (`ctos.rasi` theme)                 |
 | `kitty`     | `~/.config/kitty/kitty.conf`, `themes/monoglow_z.conf` |
 | `fastfetch` | `~/.config/fastfetch/` (dedsec logo)                  |
+| `starship`  | `~/.config/starship.toml` (bash prompt; `~/.bashrc` itself is not in the repo and just runs `eval "$(starship init bash)"`) |
 
 - Install a package with `cd ~/dotfiles && stow <pkg>`. Several packages share `~/.config/hypr`, so that directory is real and its files are individual symlinks; don't let stow fold it.
 - New config goes in its own package (one package per program); add files in the repo and restow, don't edit the target outside the repo.
