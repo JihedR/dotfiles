@@ -1,0 +1,119 @@
+/* ctOS palette (from ~/ctOS/common/Theme.qml) */
+@define-color bg        #0e0e0e;
+@define-color bg_bright #202020;
+@define-color ctos      #d9d9d9;
+@define-color text      #ffffff;
+@define-color text_dim  #cacaca;
+@define-color secondary #7a7a7a;
+@define-color accent    #1bfd9c;
+@define-color error     #fc3e38;
+
+* {
+  font-family: "JetBrainsMono Nerd Font", monospace;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  border-radius: 0;
+  min-height: 0;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+window#waybar {
+  background: @bg;
+  color: @text;
+  border: 1px solid @ctos;
+}
+
+tooltip {
+  background: @bg;
+  border: 1px solid @ctos;
+}
+tooltip label { color: @text; }
+
+/* every module is a cell separated by a 1px gray divider */
+.modules-left > widget > *,
+.modules-right > widget > * {
+  padding: 0 12px;
+  border-right: 1px solid @secondary;
+}
+.modules-right > widget:first-child > * { border-left: 1px solid @secondary; }
+.modules-right > widget:last-child > *  { border-right: none; }
+
+/* ── CT|OS label ─────────────────────────────────────── */
+#custom-ct {
+  background: @ctos;
+  color: @bg;
+  font-size: 20px;
+  font-weight: 500;
+  padding: 0 4px 0 8px;
+  border-right: none;
+}
+#custom-os {
+  color: @ctos;
+  font-size: 24px;
+  font-weight: 300;
+  padding: 0 4px 0 2px;
+}
+
+/* ── corner-bracket frame (ctOS CornerFrame), drawn with 8 gradient strips ── */
+#workspaces button,
+#cpu label, #memory label {
+  background-image:
+    linear-gradient(@ctos, @ctos), linear-gradient(@ctos, @ctos),
+    linear-gradient(@ctos, @ctos), linear-gradient(@ctos, @ctos),
+    linear-gradient(@ctos, @ctos), linear-gradient(@ctos, @ctos),
+    linear-gradient(@ctos, @ctos), linear-gradient(@ctos, @ctos);
+  background-size:
+    7px 1px, 1px 7px,
+    7px 1px, 1px 7px,
+    7px 1px, 1px 7px,
+    7px 1px, 1px 7px;
+  background-position:
+    left top,     left top,
+    right top,    right top,
+    right bottom, right bottom,
+    left bottom,  left bottom;
+  background-repeat: no-repeat;
+  background-color: transparent;
+}
+
+/* ── workspaces: square framed cells, crosshair on active ── */
+#workspaces { padding: 0; }
+#workspaces button {
+  min-width: 29px;
+  min-height: 29px;
+  margin: 3px;
+  padding: 0;
+  color: @secondary;
+  font-size: 16px;
+  font-weight: 300;
+  transition: none;
+}
+#workspaces button.active { color: @ctos; }
+#workspaces button.urgent { color: @error; }
+#workspaces button:hover {
+  background-color: @bg_bright;
+  color: @text;
+}
+
+/* ── CPU / MEM meters ────────────────────────────────── */
+#cpu, #memory { padding: 0 3px; }
+#cpu label, #memory label {
+  margin: 3px 0;
+  padding: 0 11px;
+}
+#cpu.warning label, #memory.warning label { color: @error; }
+
+/* ── right side ──────────────────────────────────────── */
+#tray menu { background: @bg; color: @text; }
+#pulseaudio.muted { color: @secondary; }
+#network.disconnected { color: @secondary; }
+#custom-user { color: @text_dim; }
+#clock { color: @text; min-width: 64px; }
+
+#custom-ct:hover, #custom-os:hover,
+#pulseaudio:hover, #custom-notification:hover, #clock:hover {
+  background-color: @bg_bright;
+}
+#custom-ct:hover { background-color: @text_dim; }
