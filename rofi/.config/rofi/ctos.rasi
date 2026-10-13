@@ -1,0 +1,145 @@
+/* ctOS rofi theme - palette from ~/ctOS/common/Theme.qml */
+* {
+  bg:        #0e0e0e;
+  bg-bright: #202020;
+  ctos:      #d9d9d9;
+  text:      #ffffff;
+  text-dim:  #cacaca;
+  secondary: #7a7a7a;
+  accent:    #1bfd9c;
+  error:     #fc3e38;
+
+  font:             "JetBrainsMono Nerd Font SemiBold 11";
+  background-color: transparent;
+  text-color:       @text;
+  border-color:     @ctos;
+  spacing:          0;
+  margin:           0;
+  padding:          0;
+}
+
+window {
+  width:            560px;
+  location:         center;
+  anchor:           center;
+  background-color: @bg;
+  border:           1px solid;
+  border-radius:    0;
+}
+
+mainbox {
+  children: [ box-header, inputbar, listview, mode-switcher ];
+}
+
+/* top strip: CT|OS block like the bar */
+box-header {
+  expand:      false;
+  orientation: horizontal;
+  children:    [ textbox-ct, textbox-os, textbox-fill, textbox-tag ];
+  border:      0 0 1px 0;
+  border-color: @secondary;
+}
+textbox-ct {
+  expand:           false;
+  str:              " CT";
+  background-color: @ctos;
+  text-color:       @bg;
+  font:             "JetBrainsMono Nerd Font Medium 16";
+  padding:          2px 4px 0 8px;
+  vertical-align:   0.5;
+}
+textbox-os {
+  expand:         false;
+  str:            "OS";
+  text-color:     @ctos;
+  font:           "JetBrainsMono Nerd Font Light 19";
+  padding:        0 8px 0 2px;
+  vertical-align: 0.5;
+}
+textbox-fill { expand: true; str: ""; }
+textbox-tag {
+  expand:         false;
+  str:            "BLUME // CENTRAL OPERATING SYSTEM";
+  text-color:     @secondary;
+  font:           "JetBrainsMono Nerd Font SemiBold 8";
+  padding:        0 12px;
+  vertical-align: 0.5;
+}
+
+inputbar {
+  children:     [ prompt, textbox-sep, entry ];
+  padding:      12px;
+  border:       0 0 1px 0;
+  border-color: @secondary;
+}
+prompt { text-color: @accent; }
+textbox-sep {
+  expand:     false;
+  str:        " <> ";
+  text-color: @secondary;
+}
+entry {
+  placeholder:       "QUERY...";
+  placeholder-color: @secondary;
+  cursor-color:      @accent;
+}
+
+listview {
+  lines:        8;
+  columns:      1;
+  fixed-height: true;
+  scrollbar:    false;
+  padding:      6px;
+}
+
+element {
+  padding:     6px 10px;
+  spacing:     10px;
+  orientation: horizontal;
+}
+element-icon {
+  size:           20px;
+  vertical-align: 0.5;
+}
+element-text {
+  vertical-align: 0.5;
+  text-color:     inherit;
+}
+element normal.normal,
+element alternate.normal { text-color: @text-dim; }
+element normal.urgent,
+element alternate.urgent { text-color: @error; }
+element normal.active,
+element alternate.active { text-color: @accent; }
+
+element selected.normal,
+element selected.active {
+  background-color: @ctos;
+  text-color:       @bg;
+}
+element selected.urgent {
+  background-color: @error;
+  text-color:       @bg;
+}
+
+mode-switcher {
+  border:       1px 0 0 0;
+  border-color: @secondary;
+}
+button {
+  padding:    6px;
+  text-color: @secondary;
+  border:     0 1px 0 0;
+  border-color: @secondary;
+}
+button selected {
+  background-color: @bg-bright;
+  text-color:       @accent;
+}
+
+message {
+  padding:      8px 12px;
+  border:       1px 0 0 0;
+  border-color: @secondary;
+}
+textbox { text-color: @text-dim; }
