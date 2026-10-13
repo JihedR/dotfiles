@@ -8,6 +8,7 @@ Personal desktop config for one machine. Read this before touching anything.
 - **GPU:** NVIDIA GTX 1660 Ti (TU116), `nvidia-open` driver (615.x). `nvidia_drm` modeset and fbdev are on (driver defaults, no modprobe.d file).
 - **Kernels:** both `linux` and `linux-lts` are installed, each with its own headers and matching NVIDIA module: `nvidia-open` (for `linux`) and `nvidia-open-lts` (for `linux-lts`). Keep the pairs in sync on upgrades. A kernel without its matching NVIDIA module boots with no working display.
 - **Compositor:** Hyprland 0.56, **Lua config** (`hyprland.lua`, not `hyprland.conf`), launched through **uwsm** (`hyprland-uwsm.desktop`).
+- **System disk:** `sdb` = Kingston SA400 480G (`/`, `/home`, `/boot/efi`, swap) on `ata5`. 2026-10-14: SATA CRC errors (`ata5 … BadCRC/ICRC`, SMART 199 = 30, all device-to-host reads) traced to its cable (tight, routed under the GPU). NAND fine: 170 = 0/35 and life 93%, same as 2026-10-12; btrfs device stats all 0. If 199 rises past 30 or `ata5` errors return, it's the cable/port again. Timeshift snapshots live on this same disk; they are not a backup.
 - **Login:** greetd with the ctOS greeter (Quickshell in cage); plasma-login is installed but disabled. See "Display manager (greetd)".
 
 ## Stow layout
@@ -78,7 +79,7 @@ The graphical session is on **tty1** (greetd `vt = 1`).
 
 ## Display manager (greetd)
 
-- **greetd** (`greetd.service`, aliased `display-manager.service`) on tty1 runs the ctOS greeter as user `greeter`: `env CTOS_MODE=kiosk cage -s -d -- quickshell --path /opt/ctos/greeter.qml`. `cage -s` keeps Ctrl+Alt+Fn working; recovery depends on it.
+- **greetd** (`greetd.service`, aliased `display-manager.service`) on tty1 runs the ctOS greeter as user `greeter`: `env CTOS_MODE=kiosk cage -s -d -- quickshell --path /opt/ctos/greeter.qml`, with Quickshell's output in `/var/lib/ctos/greeter.log` (rewritten each greeter start) instead of on tty1. `cage -s` keeps Ctrl+Alt+Fn working; recovery depends on it. The launch command reaches greetd joined with spaces and run through `sh`, so launch arguments can't contain spaces.
 - The greeter code is the ctOS fork `~/ctOS` (`github.com/jihedr/ctOS`), rsynced to `/opt/ctos`. Change the code in the fork (commits there), then re-sync: `sudo rsync -ahq --exclude=.git --exclude=.assets --chown=root:root --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r ~/ctOS/ /opt/ctos/`. Don't use the fork's `install.sh` (interactive wizard, writes its own config).
 - Config source is `greetd/` in this repo:
   - `etc/greetd/ctos.toml` and `agreety.toml` go in `/etc/greetd/`. `/etc/greetd/config.toml` is a **symlink** to one of them.
@@ -112,6 +113,7 @@ Do these from a console: **Ctrl+Alt+F2**, log in as jihed.
 
 - Menu: EndeavourOS (default), Advanced options (`linux` + `linux-lts`), UEFI Firmware Settings, `Windows Boot Manager (EFI BootNext)`, EndeavourOS snapshots.
 - **Windows has BitLocker. It must only boot via EFI BootNext, never chainloaded by GRUB.** Two Windows Boot Managers exist in NVRAM. The real one is on the HP SSD ESP (sda1, PARTUUID `556e68b3-…`, currently Boot0000). The Toshiba one (sdc1) is a leftover.
+- Kernel command line (`GRUB_CMDLINE_LINUX_DEFAULT`): `nowatchdog nvme_load=YES resume=UUID=5d22b442-… quiet loglevel=3 systemd.show_status=auto rd.udev.log_level=3`. The last four give a quiet boot (systemd still prints failures; `journalctl -b` keeps everything). To see boot text once: `e` in GRUB, delete `quiet`. Pre-quiet copy: `/etc/default/grub.pre-quiet`.
 - `/etc/default/grub` sets `GRUB_TIMEOUT=10` (menu style), `GRUB_DISABLE_OS_PROBER=true` and `GRUB_DISABLE_BOOTNEXT=true`. The second turns off grub's `31_efi_bootnext`, which listed every NVRAM entry and ran os-prober.
 - `/etc/grub.d/31_windows_bootnext` (no package owns it) adds the single Windows entry. It finds the entry by label + ESP PARTUUID, so it survives renumbering, and if the entry is missing it adds nothing. Its menu id is `efi-bootnext-windows`.
 - The installer's `/etc/grub.d/45_eos_windows` (a chainload entry) was deleted. Never re-add it, and never enable os-prober.
