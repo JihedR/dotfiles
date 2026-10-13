@@ -3,8 +3,19 @@
     "fontFamily": "JetBrainsMono Nerd Font",
     "animations": "all",
     "monitor": "HDMI-A-1",
-    "exitOverride": [],
-    "launchOverride": ["uwsm", "start", "-e", "-D", "Hyprland", "hyprland.desktop"],
+    "exitOverride": [
+      "pkill",
+      "-x",
+      "cage"
+    ],
+    "launchOverride": [
+      "uwsm",
+      "start",
+      "-e",
+      "-D",
+      "Hyprland",
+      "hyprland.desktop"
+    ],
     "fakeIdentity": {
       "id": "DSC-1000",
       "class": "L5_ROOT",
@@ -15,10 +26,22 @@
       "node": "017.042.113.009"
     },
     "modes": {
-      "greetd": { "animations": "all", "monitor": "" },
-      "kiosk": { "animations": "all", "monitor": "" },
-      "lockd": { "animations": "reduced", "monitor": "" },
-      "test": { "animations": "all", "monitor": "" }
+      "greetd": {
+        "animations": "all",
+        "monitor": ""
+      },
+      "kiosk": {
+        "animations": "all",
+        "monitor": ""
+      },
+      "lockd": {
+        "animations": "reduced",
+        "monitor": ""
+      },
+      "test": {
+        "animations": "all",
+        "monitor": ""
+      }
     }
   }
 }

@@ -3,7 +3,11 @@
     "fontFamily": "JetBrainsMono Nerd Font",
     "animations": "all",
     "monitor": "HDMI-A-1",
-    "exitOverride": [],
+    "exitOverride": [
+      "pkill",
+      "-x",
+      "cage"
+    ],
     "launchOverride": [
       "sh",
       "-c",
