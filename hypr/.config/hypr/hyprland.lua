@@ -54,6 +54,7 @@ local menu = "rofi -show drun"
 hl.on("hyprland.start", function ()
     hl.exec_cmd("uwsm app -- waybar")
     hl.exec_cmd("uwsm app -- hyprpaper")
+    hl.exec_cmd("uwsm app -- hypridle")
 end)
 
 
@@ -215,6 +216,7 @@ hl.config({
     misc = {
         force_default_wallpaper = 0,     -- Set to 0 or 1 to disable the anime mascot wallpapers
         disable_hyprland_logo   = true,  -- If true disables the random hyprland logo / anime girl background. :(
+        allow_session_lock_restore = true, -- lets a crashed hyprlock be relaunched instead of losing the session
     },
 })
 
@@ -271,6 +273,7 @@ hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd(menu))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit"))    -- dwindle only
+hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("loginctl lock-session")) -- hypridle runs lock_cmd
 
 -- Move focus with mainMod + arrow keys
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ direction = "left" }))
