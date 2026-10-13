@@ -79,6 +79,15 @@ The graphical session is on **tty3**.
 - **grub-btrfsd** is enabled with an override (`/etc/systemd/system/grub-btrfsd.service.d/override.conf`) running `--timeshift-auto`, so new Timeshift snapshots show up as bootable GRUB entries.
 - Take a manual snapshot (`sudo timeshift --create --comments "..."`) before risky system changes (driver, kernel, display manager).
 
+## GRUB menu and Windows (BitLocker)
+
+- Menu: EndeavourOS (default), Advanced options (`linux` + `linux-lts`), UEFI Firmware Settings, `Windows Boot Manager (EFI BootNext)`, EndeavourOS snapshots.
+- **Windows has BitLocker. It must only boot via EFI BootNext, never chainloaded by GRUB.** Two Windows Boot Managers exist in NVRAM. The real one is on the HP SSD ESP (sda1, PARTUUID `556e68b3-…`, currently Boot0000). The Toshiba one (sdc1) is a leftover.
+- `/etc/default/grub` sets `GRUB_DISABLE_OS_PROBER=true` and `GRUB_DISABLE_BOOTNEXT=true`. The second turns off grub's `31_efi_bootnext`, which listed every NVRAM entry and ran os-prober.
+- `/etc/grub.d/31_windows_bootnext` (no package owns it) adds the single Windows entry. It finds the entry by label + ESP PARTUUID, so it survives renumbering, and if the entry is missing it adds nothing. Its menu id is `efi-bootnext-windows`.
+- The installer's `/etc/grub.d/45_eos_windows` (a chainload entry) was deleted. Never re-add it, and never enable os-prober.
+- Regenerate with `sudo grub-mkconfig -o /boot/grub/grub.cfg`. A backup of the pre-cleanup state is in `~/grub-backup-2026-10-13/`.
+
 ## Suspend: masked, do not touch
 
 `sleep.target`, `suspend.target`, `hibernate.target`, `hybrid-sleep.target` and `suspend-then-hibernate.target` are **masked**. Resuming from suspend corrupts the display or leaves it black on this NVIDIA setup. This is **unresolved**. Don't unmask, debug or "fix" suspend (NVIDIA preserve-video-memory, nvidia-suspend services, kernel params and so on) without asking the user first. hypridle's sleep hooks are kept in place for whenever suspend comes back.
