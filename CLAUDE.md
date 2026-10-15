@@ -40,11 +40,12 @@ The repo lives at `~/dotfiles`. Each top-level directory is a stow package that 
 - `hypridle.conf`, `hyprlock.conf` and `hyprpaper.conf` are still **hyprlang**, not Lua.
 - Autostart in `hl.on("hyprland.start")` uses `uwsm app -- <cmd>` so each app gets its own systemd scope. Currently: waybar, hyprpaper, hypridle.
 - **swaync and hyprpolkitagent run as systemd user services** (`systemctl --user` enabled). Never autostart them from `hyprland.lua`; that would start duplicates.
+- **SUPER+R** (rofi) is `non_consuming` and runs `pgrep -x rofi || rofi -show drun`: when rofi is already open nothing new starts, the key passes through, and rofi's `kb-mode-next` includes `Super+r`, so it cycles LAUNCH → EXEC → PROC → LAUNCH. Esc closes. Keep the bind non-consuming, or the key never reaches rofi.
 - `misc.allow_session_lock_restore = true` is required for the lock-screen recovery below. Keep it.
 
 ## Waybar
 
-- Waybar 0.15, one bar at the **bottom**. Custom modules are driven by scripts in `waybar/.config/waybar/scripts/` (stowed with the package):
+- Waybar 0.15, one bar at the **top**. Custom modules are driven by scripts in `waybar/.config/waybar/scripts/` (stowed with the package):
   - `ctos-ws`: the five workspace cells. `ctos-ws listen` is one shared listener (a single `socat` on Hyprland's `.socket2.sock`) that writes `$XDG_RUNTIME_DIR/ctos-ws.state` and sends Waybar SIGRTMIN+8; the cells (`ctos-ws cell N`) only read that file. Waybar starts and stops the listener through the hidden `custom/ws-listen` module, so it is never autostarted.
   - `ctos-meter cpu|mem`: CPU/MEM value with a thin fill bar.
   - `ctos-net`: `[NW_xxxx]` tag, green dot online, red dot and `[NW_----]` offline (`CTOS_NET_ROUTE` fakes the route for testing).

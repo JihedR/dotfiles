@@ -8,6 +8,8 @@ configuration {
   display-window:      "PROC";
   matching:            "fuzzy";
   sort:                true;
+  /* Super+r cycles LAUNCH -> EXEC -> PROC while open (Hyprland passes it through) */
+  kb-mode-next:        "Shift+Right,Control+Tab,Super+r";
 }
 
 @theme "ctos"
