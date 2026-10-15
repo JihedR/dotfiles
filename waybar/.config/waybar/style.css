@@ -57,8 +57,8 @@ tooltip label { color: @text; }
 }
 
 /* ── corner-bracket frame (ctOS CornerFrame), drawn with 8 gradient strips ── */
-#workspaces button,
-#cpu label, #memory label {
+#custom-ws1, #custom-ws2, #custom-ws3, #custom-ws4, #custom-ws5,
+#custom-cpu, #custom-mem, #custom-status {
   background-image:
     linear-gradient(@ctos, @ctos), linear-gradient(@ctos, @ctos),
     linear-gradient(@ctos, @ctos), linear-gradient(@ctos, @ctos),
@@ -79,41 +79,52 @@ tooltip label { color: @text; }
 }
 
 /* ── workspaces: square framed cells, crosshair on active ── */
-#workspaces { padding: 0; }
-#workspaces button {
+#ws { padding: 0 3px; }
+#custom-ws1, #custom-ws2, #custom-ws3, #custom-ws4, #custom-ws5 {
   min-width: 29px;
   min-height: 29px;
   margin: 3px;
   padding: 0;
+  border: none;
   color: @secondary;
   font-size: 16px;
   font-weight: 300;
-  transition: none;
 }
-#workspaces button.active { color: @ctos; }
-#workspaces button.urgent { color: @error; }
-#workspaces button:hover {
+#custom-ws1.active, #custom-ws2.active, #custom-ws3.active,
+#custom-ws4.active, #custom-ws5.active { color: @ctos; }
+#custom-ws1:hover, #custom-ws2:hover, #custom-ws3:hover,
+#custom-ws4:hover, #custom-ws5:hover {
   background-color: @bg_bright;
   color: @text;
 }
 
-/* ── CPU / MEM meters ────────────────────────────────── */
-#cpu, #memory { padding: 0 3px; }
-#cpu label, #memory label {
-  margin: 3px 0;
+/* ── CPU / MEM meters: value + fill bar ─────────────── */
+/* the group (#cpu / #mem) carries the divider, the module inside the frame */
+#cpu, #mem { padding: 0 3px; }
+#custom-cpu, #custom-mem {
+  margin: 3px;
   padding: 0 11px;
+  border-right: none;
 }
-#cpu.warning label, #memory.warning label { color: @error; }
 
 /* ── right side ──────────────────────────────────────── */
+#tray { padding: 0 8px; }
 #tray menu { background: @bg; color: @text; }
-#pulseaudio.muted { color: @secondary; }
-#network.disconnected { color: @secondary; }
-#custom-user { color: @text_dim; }
-#clock { color: @text; min-width: 64px; }
+#custom-notification {
+  font-size: 10px;
+  color: @text_dim;
+  padding: 0 8px;
+}
+#custom-id { color: @text_dim; }
+#custom-status {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 3px;
+  padding: 0 10px;
+}
 
 #custom-ct:hover, #custom-os:hover,
-#pulseaudio:hover, #custom-notification:hover, #clock:hover {
+#custom-notification:hover, #custom-status:hover {
   background-color: @bg_bright;
 }
 #custom-ct:hover { background-color: @text_dim; }

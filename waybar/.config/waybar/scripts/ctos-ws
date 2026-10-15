@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+# ctOS workspace cells for Waybar.
+#
+# Hyprland 0.56 with the Lua config rejects the "dispatch workspace N" that
+# Waybar's built-in hyprland/workspaces module sends, so the cells are custom
+# modules that dispatch hl.dsp.focus instead.
+#
+#   ctos-ws listen            one shared listener for all cells: on Hyprland
+#                             events, rewrite the state file and send Waybar
+#                             SIGRTMIN+8, which re-runs the cells
+#   ctos-ws cell N            print cell N as Waybar JSON (reads the state file)
+#   ctos-ws focus N           switch to workspace N
+#   ctos-ws scroll prev|next  cycle through 1..5, wrapping
+set -u
+
+CELLS=5
+SIGNAL=8
+state="${XDG_RUNTIME_DIR:-/tmp}/ctos-ws.state"
+sock="${XDG_RUNTIME_DIR:-/tmp}/hypr/${HYPRLAND_INSTANCE_SIGNATURE:-}/.socket2.sock"
+
+# state file: line 1 = active workspace id, line 2 = ids that have windows
+write_state() {
+    local active occupied tmp
+    active=$(hyprctl activeworkspace -j | jq -r '.id')
+    occupied=$(hyprctl workspaces -j | jq -r '[.[] | select(.windows > 0) | .id] | join(" ")')
+    tmp=$(mktemp "$state.XXXXXX") || return
+    printf '%s\n%s\n' "$active" "$occupied" >"$tmp" && mv -f "$tmp" "$state"
+}
+
+refresh() {
+    write_state
+    pkill -RTMIN+"$SIGNAL" -x waybar
+}
+
+focus() {
+    hyprctl dispatch "hl.dsp.focus({ workspace = $1 })" >/dev/null
+}
+
+case "${1:-}" in
+listen)
+    echo # empty output: Waybar hides this module
+    # Read socat through a process substitution, not a pipe: a "| while" loop
+    # runs in a subshell that outlives this process when Waybar stops it. If
+    # this shell is killed outright, socat exits on its next write (no reader).
+    exec {events}< <(socat -U - UNIX-CONNECT:"$sock")
+    socat_pid=$!
+    trap 'kill "$socat_pid" 2>/dev/null' EXIT
+    trap 'exit 0' TERM INT HUP
+    refresh
+    while IFS= read -r -u "$events" line; do
+        case "${line%%>>*}" in
+        workspace* | focusedmon* | createworkspace* | destroyworkspace* | \
+            openwindow | closewindow | movewindow* | activespecial*) ;;
+        *) continue ;;
+        esac
+        # one switch emits several events (v1 + v2); collapse a burst into one refresh
+        while IFS= read -r -t 0.05 -u "$events" _; do :; done
+        refresh
+    done
+    ;;
+cell)
+    n=$2
+    [ -r "$state" ] || write_state
+    { read -r active; read -r occupied; } <"$state"
+    if [ "$n" = "$active" ]; then
+        text="+" class="active"
+    elif [[ " $occupied " == *" $n "* ]]; then
+        text="·" class="occupied"
+    else
+        text=" " class="empty" # not "": an empty text hides the module
+    fi
+    printf '{"text":"%s","class":"%s"}\n' "$text" "$class"
+    ;;
+focus)
+    focus "$2"
+    ;;
+scroll)
+    cur=$(hyprctl activeworkspace -j | jq -r '.id')
+    if ((cur < 1 || cur > CELLS)); then
+        n=1
+    elif [ "$2" = next ]; then
+        n=$((cur % CELLS + 1))
+    else
+        n=$(((cur + CELLS - 2) % CELLS + 1))
+    fi
+    focus "$n"
+    ;;
+*)
+    echo "usage: ctos-ws listen | cell N | focus N | scroll prev|next" >&2
+    exit 2
+    ;;
+esac

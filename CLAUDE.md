@@ -21,7 +21,7 @@ The repo lives at `~/dotfiles`. Each top-level directory is a stow package that 
 | `hypridle`  | `~/.config/hypr/hypridle.conf`                        |
 | `hyprlock`  | `~/.config/hypr/hyprlock.conf`                        |
 | `hyprpaper` | `~/.config/hypr/hyprpaper.conf`, `~/.config/hypr/wallpapers/` |
-| `waybar`    | `~/.config/waybar/`                                   |
+| `waybar`    | `~/.config/waybar/` (`config.jsonc`, `style.css`, `scripts/ctos-*`), see "Waybar" below |
 | `rofi`      | `~/.config/rofi/` (`ctos.rasi` theme)                 |
 | `kitty`     | `~/.config/kitty/kitty.conf`, `themes/monoglow_z.conf` |
 | `fastfetch` | `~/.config/fastfetch/` (dedsec logo)                  |
@@ -41,6 +41,15 @@ The repo lives at `~/dotfiles`. Each top-level directory is a stow package that 
 - Autostart in `hl.on("hyprland.start")` uses `uwsm app -- <cmd>` so each app gets its own systemd scope. Currently: waybar, hyprpaper, hypridle.
 - **swaync and hyprpolkitagent run as systemd user services** (`systemctl --user` enabled). Never autostart them from `hyprland.lua`; that would start duplicates.
 - `misc.allow_session_lock_restore = true` is required for the lock-screen recovery below. Keep it.
+
+## Waybar
+
+- Waybar 0.15, one bar at the **bottom**. Custom modules are driven by scripts in `waybar/.config/waybar/scripts/` (stowed with the package):
+  - `ctos-ws`: the five workspace cells. `ctos-ws listen` is one shared listener (a single `socat` on Hyprland's `.socket2.sock`) that writes `$XDG_RUNTIME_DIR/ctos-ws.state` and sends Waybar SIGRTMIN+8; the cells (`ctos-ws cell N`) only read that file. Waybar starts and stops the listener through the hidden `custom/ws-listen` module, so it is never autostarted.
+  - `ctos-meter cpu|mem`: CPU/MEM value with a thin fill bar.
+  - `ctos-net`: `[NW_xxxx]` tag, green dot online, red dot and `[NW_----]` offline (`CTOS_NET_ROUTE` fakes the route for testing).
+  - `ctos-status`: the encoded `00YYYY-MMDD-HHMM-TZ-MIC…VOL…` string; volume/mute actions refresh it with SIGRTMIN+9.
+- **Waybar 0.15 vs Hyprland Lua dispatch:** Waybar's built-in `hyprland/workspaces` (and any `hyprctl dispatch workspace N` / `workspace e±1`) sends hyprlang-style dispatches, which Hyprland 0.56 with the Lua config rejects, so clicks and scrolls do nothing. Don't switch back to the built-in module; dispatch Lua instead, e.g. `hyprctl dispatch 'hl.dsp.focus({ workspace = 3 })'` (what `ctos-ws focus N` / `scroll prev|next` do). Same for any other Waybar `on-click` that dispatches to Hyprland.
 
 ## ctOS style
 
