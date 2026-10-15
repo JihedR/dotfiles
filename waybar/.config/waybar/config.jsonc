@@ -123,8 +123,8 @@
     "on-click": "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle; pkill -RTMIN+9 -x waybar"
   },
   "wireplumber": {
-    "format": "{icon}",
-    "format-muted": "󰝟",
+    "format": "{icon} {volume}%",
+    "format-muted": "󰝟 {volume}%",
     "format-icons": ["󰕿", "󰖀", "󰕾"],
     "tooltip-format": "VOL // {volume}%",
     "max-volume": 100,
@@ -132,10 +132,9 @@
     "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
     "on-click-right": "pavucontrol"
   },
-  // [HH:MM]; click toggles to [YYYY-MM-DD]
+  // [YYYY-MM-DD // HH:MM]
   "clock": {
-    "format": "[{:%H:%M}]",
-    "format-alt": "[{:%Y-%m-%d}]",
+    "format": "[{:%Y-%m-%d // %H:%M}]",
     "tooltip-format": "{:%A %d %B %Y}",
     "interval": 60
   }
