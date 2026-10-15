@@ -1,7 +1,7 @@
 // ctOS-style Waybar - mirrors ~/ctOS/bar.qml until the Quickshell bar is finished
 {
   "layer": "top",
-  "position": "bottom",
+  "position": "top",
   "height": 37,
   "spacing": 0,
   "reload_style_on_change": true,
