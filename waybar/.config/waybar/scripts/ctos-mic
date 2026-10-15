@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Mic indicator for Waybar: prints nothing (Waybar hides the module) unless the
+# default mic is muted (red) or an app is recording from a real input (green).
+# Monitor sources and pavucontrol's peak meters don't count as recording.
+# Waybar runs it every 2 s and on SIGRTMIN+9 (sent by the mute toggle).
+set -u
+
+ACCENT='#1bfd9c' ERROR='#fc3e38'
+MIC=$'\U000F036C' MIC_OFF=$'\U000F036D' # nf-md-microphone / microphone_off
+
+muted=0
+[[ $(wpctl get-volume @DEFAULT_AUDIO_SOURCE@ 2>/dev/null) == *MUTED* ]] && muted=1
+
+# names of apps with a capture stream on a non-monitor source
+apps=$(jq -rn \
+    --argjson src "$(pactl -f json list sources 2>/dev/null || echo '[]')" \
+    --argjson out "$(pactl -f json list source-outputs 2>/dev/null || echo '[]')" '
+    [$src[] | select(.name | endswith(".monitor") | not) | .index] as $real
+    | [$out[]
+       | select(.source as $s | $real | index($s))
+       | .properties
+       | select(.["application.id"] != "org.PulseAudio.pavucontrol")
+       | (.["application.name"] // .["application.process.binary"] // "unknown")]
+    | unique | join(", ")')
+
+[[ $muted == 0 && -z $apps ]] && { echo '{"text": ""}'; exit 0; }
+
+if [[ $muted == 1 ]]; then
+    text="<span color='$ERROR'>$MIC_OFF</span>" tooltip='MIC // MUTED' class=muted
+else
+    text="<span color='$ACCENT'>$MIC</span>" tooltip='MIC // LIVE' class=recording
+fi
+[[ -n $apps ]] && tooltip+=$'\n'"REC // ${apps^^}"
+
+jq -cn --arg text "$text" --arg tooltip "$tooltip" --arg class "$class" \
+    '{text: $text, tooltip: $tooltip, class: $class}'

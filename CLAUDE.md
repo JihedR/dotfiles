@@ -49,7 +49,9 @@ The repo lives at `~/dotfiles`. Each top-level directory is a stow package that 
   - `ctos-ws`: the five workspace cells. `ctos-ws listen` is one shared listener (a single `socat` on Hyprland's `.socket2.sock`) that writes `$XDG_RUNTIME_DIR/ctos-ws.state` and sends Waybar SIGRTMIN+8; the cells (`ctos-ws cell N`) only read that file. Waybar starts and stops the listener through the hidden `custom/ws-listen` module, so it is never autostarted.
   - `ctos-meter cpu|mem`: CPU/MEM value with a thin fill bar.
   - `ctos-net`: `[NW_xxxx]` tag, green dot online, red dot and `[NW_----]` offline (`CTOS_NET_ROUTE` fakes the route for testing).
-  - `ctos-status`: the encoded `00YYYY-MMDD-HHMM-TZ-MIC…VOL…` string; volume/mute actions refresh it with SIGRTMIN+9.
+  - `ctos-mic`: mic indicator, empty (so Waybar hides it) unless the default mic is muted (red) or an app records from a real input (green; monitor sources and pavucontrol meters ignored). Click mutes the mic and sends SIGRTMIN+9.
+- Right end: `custom/mic`, then the built-in `wireplumber` (volume icon; scroll ±5 capped at 100, click mutes, right-click pavucontrol) and `clock` (`[HH:MM]`, click toggles `[YYYY-MM-DD]`, date in the tooltip).
+- GTK tooltips eat one scroll step when the tooltip is visible: scrolling the volume with long pauses between notches skips every other one; normal wheel speed is fine. Not a config bug.
 - **Waybar 0.15 vs Hyprland Lua dispatch:** Waybar's built-in `hyprland/workspaces` (and any `hyprctl dispatch workspace N` / `workspace e±1`) sends hyprlang-style dispatches, which Hyprland 0.56 with the Lua config rejects, so clicks and scrolls do nothing. Don't switch back to the built-in module; dispatch Lua instead, e.g. `hyprctl dispatch 'hl.dsp.focus({ workspace = 3 })'` (what `ctos-ws focus N` / `scroll prev|next` do). Same for any other Waybar `on-click` that dispatches to Hyprland.
 
 ## ctOS style

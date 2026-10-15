@@ -58,7 +58,7 @@ tooltip label { color: @text; }
 
 /* ── corner-bracket frame (ctOS CornerFrame), drawn with 8 gradient strips ── */
 #custom-ws1, #custom-ws2, #custom-ws3, #custom-ws4, #custom-ws5,
-#custom-cpu, #custom-mem, #custom-status {
+#custom-cpu, #custom-mem, #clock {
   background-image:
     linear-gradient(@ctos, @ctos), linear-gradient(@ctos, @ctos),
     linear-gradient(@ctos, @ctos), linear-gradient(@ctos, @ctos),
@@ -116,7 +116,15 @@ tooltip label { color: @text; }
   padding: 0 8px;
 }
 #custom-id { color: @text_dim; }
-#custom-status {
+#custom-mic { font-size: 15px; padding: 0 10px; }
+#wireplumber {
+  color: @ctos;
+  font-size: 15px;
+  padding: 0 10px;
+}
+#wireplumber.muted { color: @error; }
+#clock {
+  color: @text;
   font-size: 14px;
   font-weight: 500;
   margin: 3px;
@@ -124,7 +132,8 @@ tooltip label { color: @text; }
 }
 
 #custom-ct:hover, #custom-os:hover,
-#custom-notification:hover, #custom-status:hover {
+#custom-notification:hover, #custom-mic:hover,
+#wireplumber:hover, #clock:hover {
   background-color: @bg_bright;
 }
 #custom-ct:hover { background-color: @text_dim; }

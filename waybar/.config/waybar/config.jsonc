@@ -8,7 +8,7 @@
 
   "modules-left": ["custom/ct", "custom/os", "group/ws", "group/cpu", "group/mem"],
   "modules-center": [],
-  "modules-right": ["tray", "custom/notification", "custom/net", "custom/id", "custom/status"],
+  "modules-right": ["tray", "custom/notification", "custom/net", "custom/id", "custom/mic", "wireplumber", "clock"],
 
   // ── system label ─────────────────────────────────────────
   "custom/ct": {
@@ -114,16 +114,29 @@
     "format": "[ID_{}]",
     "tooltip": false
   },
-  // 00YYYY-MMDD-HHMM-TZ-MIC<mic>VOL<vol> (ctOS Status); volume actions refresh it via SIGRTMIN+9
-  "custom/status": {
-    "exec": "~/.config/waybar/scripts/ctos-status",
+  // hidden unless the mic is muted or an app is recording; mute toggle refreshes it via SIGRTMIN+9
+  "custom/mic": {
+    "exec": "~/.config/waybar/scripts/ctos-mic",
     "return-type": "json",
     "interval": 2,
     "signal": 9,
-    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle; pkill -RTMIN+9 -x waybar",
-    "on-click-middle": "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle; pkill -RTMIN+9 -x waybar",
-    "on-click-right": "pavucontrol",
-    "on-scroll-up": "wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+; pkill -RTMIN+9 -x waybar",
-    "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-; pkill -RTMIN+9 -x waybar"
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle; pkill -RTMIN+9 -x waybar"
+  },
+  "wireplumber": {
+    "format": "{icon}",
+    "format-muted": "󰝟",
+    "format-icons": ["󰕿", "󰖀", "󰕾"],
+    "tooltip-format": "VOL // {volume}%",
+    "max-volume": 100,
+    "scroll-step": 5,
+    "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
+    "on-click-right": "pavucontrol"
+  },
+  // [HH:MM]; click toggles to [YYYY-MM-DD]
+  "clock": {
+    "format": "[{:%H:%M}]",
+    "format-alt": "[{:%Y-%m-%d}]",
+    "tooltip-format": "{:%A %d %B %Y}",
+    "interval": 60
   }
 }
