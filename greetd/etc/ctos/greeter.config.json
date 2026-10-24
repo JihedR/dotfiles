@@ -8,14 +8,6 @@
       "-x",
       "cage"
     ],
-    "launchOverride": [
-      "uwsm",
-      "start",
-      "-e",
-      "-D",
-      "Hyprland",
-      "hyprland.desktop"
-    ],
     "fakeIdentity": {
       "id": "DSC-1000",
       "class": "L5_ROOT",

@@ -26,6 +26,7 @@ The repo lives at `~/dotfiles`. Each top-level directory is a stow package that 
 | `kitty`     | `~/.config/kitty/kitty.conf`, `themes/monoglow_z.conf` |
 | `fastfetch` | `~/.config/fastfetch/` (dedsec logo)                  |
 | `starship`  | `~/.config/starship.toml` (bash prompt; `~/.bashrc` itself is not in the repo and just runs `eval "$(starship init bash)"`) |
+| `systemd`   | `~/.config/systemd/user/*.service.d/` drop-ins (swaync and hyprpolkitagent only under Hyprland). Install with `stow --no-folding systemd` (`~/.config/systemd/user` holds unrelated enable symlinks), then `systemctl --user daemon-reload` |
 | `grub`      | **not a stow package** (`.stow-local-ignore` makes `stow grub` a no-op). ctOS GRUB theme source; built with `grub/build.sh` and copied to `/boot/grub/themes/ctos`, see "GRUB theme" below |
 | `greetd`    | **not a stow package** (same `.stow-local-ignore` trick). greetd configs and ctOS greeter config, copied to `/etc/greetd`, `/etc/ctos`, `/var/lib/ctos`, see "Display manager (greetd)" below |
 
@@ -39,7 +40,7 @@ The repo lives at `~/dotfiles`. Each top-level directory is a stow package that 
 - From the shell, dispatch Lua: `hyprctl dispatch 'hl.dsp.dpms({action = "on"})'`.
 - `hypridle.conf`, `hyprlock.conf` and `hyprpaper.conf` are still **hyprlang**, not Lua.
 - Autostart in `hl.on("hyprland.start")` uses `uwsm app -- <cmd>` so each app gets its own systemd scope. Currently: waybar, hyprpaper, hypridle.
-- **swaync and hyprpolkitagent run as systemd user services** (`systemctl --user` enabled). Never autostart them from `hyprland.lua`; that would start duplicates.
+- **swaync and hyprpolkitagent run as systemd user services** (`systemctl --user` enabled). Never autostart them from `hyprland.lua`; that would start duplicates. Both are `WantedBy=graphical-session.target`, which Plasma also starts, so drop-ins from the `systemd` package add `ConditionEnvironment=XDG_CURRENT_DESKTOP=Hyprland` (under Plasma they're skipped, not failed).
 - **SUPER+R** (rofi) is `non_consuming` and runs `pgrep -x rofi || rofi -show drun`: when rofi is already open nothing new starts, the key passes through, and rofi's `kb-mode-next` includes `Super+r`, so it cycles LAUNCH → EXEC → PROC → LAUNCH. Esc closes. Keep the bind non-consuming, or the key never reaches rofi.
 - `misc.allow_session_lock_restore = true` is required for the lock-screen recovery below. Keep it.
 
@@ -95,11 +96,12 @@ The graphical session is on **tty1** (greetd `vt = 1`).
 - The greeter code is the ctOS fork `~/ctOS` (`github.com/jihedr/ctOS`), rsynced to `/opt/ctos`. Change the code in the fork (commits there), then re-sync: `sudo rsync -ahq --exclude=.git --exclude=.assets --chown=root:root --chmod=Du=rwx,Dg=rx,Do=rx,Fu=rw,Fg=r,Fo=r ~/ctOS/ /opt/ctos/`. Don't use the fork's `install.sh` (interactive wizard, writes its own config).
 - Config source is `greetd/` in this repo:
   - `etc/greetd/ctos.toml` and `agreety.toml` go in `/etc/greetd/`. `/etc/greetd/config.toml` is a **symlink** to one of them.
-  - `etc/ctos/greeter.config.json` goes in `/etc/ctos/`. It sets the fake identity/status and `launchOverride` (= the `hyprland-uwsm.desktop` Exec).
-  - `var/lib/ctos/greeter.state.json` goes in `/var/lib/ctos/`, owned by `greeter`; the greeter rewrites it.
-  - Install a change with `sudo install -m644 ~/dotfiles/greetd/etc/... /etc/...`, then `sudo systemctl restart greetd`. Restarting greetd kills a session started from it, so restart from a tty, not from Hyprland.
-- Test without root inside Hyprland: `CTOS_DEBUG=1 CTOS_MODE=test CTOS_CONFIG=$HOME/dotfiles/greetd/etc/ctos/greeter.config.json quickshell --path ~/ctOS/greeter.qml` (password `password`, Esc quits). For real greetd on VT5 without touching the display manager: `sudo greetd --config ~/dotfiles/greetd/staging.toml`. That needs `/etc/ctos/greeter.staging.json`; remove it afterwards.
-- The greeter doesn't unlock KWallet (plasma-login's PAM did via `pam_kwallet5`).
+  - `etc/ctos/greeter.config.json` goes in `/etc/ctos/`. It sets the fake identity/status and `exitOverride` (`pkill -x cage`). It has **no `launchOverride`** on purpose: that would replace every session's command and make session choice useless.
+  - `var/lib/ctos/greeter.state.json` goes in `/var/lib/ctos/`, owned by `greeter`; the greeter rewrites it. Its `defaultDesktopName` (`Hyprland (uwsm-managed)`) is the default session.
+  - Install a change with `sudo install -m644 ~/dotfiles/greetd/etc/... /etc/...`, then `sudo systemctl restart greetd`. Restarting greetd kills a session started from it, so restart from a tty, not from Hyprland. Changes in `/etc/ctos` need no restart: the greeter reads them each time it starts.
+- **Sessions:** the greeter runs the `Exec` of the selected `/usr/share/wayland-sessions/*.desktop` entry, split on whitespace. Default is the state file's `defaultDesktopName`. With no state file or no match, the fork falls back to the entry whose Exec starts with `uwsm`. In the greeter terminal: `desktops` lists entries, `chdesk plasma` picks Plasma for this login only, `chdesk -d <name>` also saves it as the default. `chdesk` matches substrings, so **don't use `chdesk hyprland`** (it can hit the plain `Hyprland` entry, which runs without uwsm). Use `chdesk uwsm`, or just log in. Plasma (Wayland) runs its own Exec (`plasma-dbus-run-session-if-needed startplasma-wayland`), not through uwsm.
+- Test without root inside Hyprland: `CTOS_DEBUG=1 CTOS_MODE=test CTOS_CONFIG=$HOME/dotfiles/greetd/etc/ctos/greeter.config.json quickshell --path ~/ctOS/greeter.qml` (password `password`, Esc quits; logs `Would launch: <cmd>` for the selected session). For real greetd on VT5 without touching the display manager: `sudo greetd --config ~/dotfiles/greetd/staging.toml`. That needs `/etc/ctos/greeter.staging.json`; remove it afterwards.
+- The greeter doesn't unlock KWallet (plasma-login's PAM did via `pam_kwallet5`), so a Plasma login asks for the wallet password on first use.
 - Pre-switch snapshot: Timeshift "before greetd/ctOS greeter".
 
 ### Login recovery
