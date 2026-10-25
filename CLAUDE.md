@@ -26,6 +26,7 @@ The repo lives at `~/dotfiles`. Each top-level directory is a stow package that 
 | `kitty`     | `~/.config/kitty/kitty.conf`, `themes/monoglow_z.conf` |
 | `fastfetch` | `~/.config/fastfetch/` (dedsec logo)                  |
 | `starship`  | `~/.config/starship.toml` (bash prompt; `~/.bashrc` itself is not in the repo and just runs `eval "$(starship init bash)"`) |
+| `pipewire`  | `~/.config/pipewire/jack.conf.d/reaper.conf`: `jack.rules` entry matching `application.process.binary = "reaper"` that sets `node.force-quantum = 256` and `node.force-rate = 48000`, the same props `PIPEWIRE_QUANTUM=256/48000` sets, so REAPER gets 256/48000 however it's launched. Install with `stow --no-folding pipewire` (keeps `~/.config/pipewire` a real dir). Read when a JACK client opens; no PipeWire restart, just restart REAPER |
 | `systemd`   | `~/.config/systemd/user/*.service.d/` drop-ins (swaync and hyprpolkitagent only under Hyprland). Install with `stow --no-folding systemd` (`~/.config/systemd/user` holds unrelated enable symlinks), then `systemctl --user daemon-reload` |
 | `grub`      | **not a stow package** (`.stow-local-ignore` makes `stow grub` a no-op). ctOS GRUB theme source; built with `grub/build.sh` and copied to `/boot/grub/themes/ctos`, see "GRUB theme" below |
 | `greetd`    | **not a stow package** (same `.stow-local-ignore` trick). greetd configs and ctOS greeter config, copied to `/etc/greetd`, `/etc/ctos`, `/var/lib/ctos`, see "Display manager (greetd)" below |
