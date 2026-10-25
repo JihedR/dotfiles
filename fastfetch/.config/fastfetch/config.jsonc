@@ -1,7 +1,11 @@
+// ctOS profiler: palette from ~/ctOS/common/Theme.qml
+//   ctos 217;217;217  text 255;255;255  text_dim 202;202;202  secondary 122;122;122
+//   accent 27;253;156  error 252;62;56  bg 14;14;14  bg_bright 32;32;32
 {
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
   "logo": {
     "source": "$HOME/.config/fastfetch/dedsec.txt",
+    "color": { "1": "38;2;217;217;217" },
     "padding": {
       "top": 1,
       "left": 7,
@@ -9,46 +13,66 @@
     }
   },
   "display": {
+    "separator": "  ",
+    // clip long lines at the window edge instead of wrapping into the logo column
+    "disableLinewrap": true,
+    "percent": {
+      "color": { "green": "38;2;27;253;156", "yellow": "38;2;217;217;217", "red": "38;2;252;62;56" }
+    },
     "color": {
-      "keys": "#f1f1f1"
+      "keys": "38;2;122;122;122",
+      "output": "38;2;255;255;255"
     }
   },
   "modules": [
-    {
-      "type": "title",
-      "format": "{#white}{user-name}{#}{#blue}@{#}{#green}{host-name}{#}"
-    },
-    "separator",
-    {
-      "type": "os",
-      "key": "OS"
-    },
-    {
-      "type": "kernel",
-      "key": "Kernel"
-    },
-    "uptime",
-    "packages",
-    "break",
-    "shell",
-    "de",
-    "wm",
-    "icons",
-    "font",
-    "terminal",
-    "terminalfont",
+    // CT|OS mark like the bar: filled block "CT", thin "OS"
     {
       "type": "custom",
-      "key": "Theme",
-      "format": "wnkz/monoglow.nvim"
+      "format": "{#48;2;217;217;217;38;2;14;14;14} CT {#}{#38;2;217;217;217} OS{#}{#38;2;122;122;122}  // CENTRAL OPERATING SYSTEM{#}"
+    },
+    {
+      "type": "custom",
+      "format": "{#38;2;122;122;122}──────────────────────────────────────────{#}"
+    },
+    {
+      "type": "title",
+      "key": "ID    ",
+      "format": "{user-name}{#38;2;122;122;122}@{#}{host-name}"
+    },
+    {
+      "type": "command",
+      "key": "NOTE  ",
+      "text": "\"$HOME/.config/fastfetch/note.sh\"",
+      "outputColor": "38;2;202;202;202"
     },
     "break",
-    "disk",
+    { "type": "custom", "format": "{#38;2;122;122;122}// SYSTEM{#}" },
+    { "type": "os", "key": "OS    ", "format": "ctOS {arch}" },
+    { "type": "kernel", "key": "KERNEL" },
+    { "type": "uptime", "key": "UPTIME" },
+    { "type": "packages", "key": "PKGS  " },
+    { "type": "shell", "key": "SHELL " },
+    { "type": "wm", "key": "WM    " },
+    { "type": "terminal", "key": "TERM  " },
+    { "type": "custom", "key": "THEME ", "format": "ctOS // monoglow.nvim" },
     "break",
-    "localip",
-    "battery",
-    "poweradapter",
+    { "type": "custom", "format": "{#38;2;122;122;122}// HARDWARE{#}" },
+    { "type": "cpu", "key": "CPU   " },
+    { "type": "gpu", "key": "GPU   " },
+    { "type": "memory", "key": "MEM   " },
+    { "type": "disk", "key": "DISK  " },
     "break",
-    "colors"
+    { "type": "custom", "format": "{#38;2;122;122;122}// NETWORK{#}" },
+    { "type": "localip", "key": "NODE  " },
+    "break",
+    // palette swatch: bg_bright, secondary, text_dim, ctos, text, accent, error
+    {
+      "type": "custom",
+      "format": "{#38;2;32;32;32}███{#38;2;122;122;122}███{#38;2;202;202;202}███{#38;2;217;217;217}███{#38;2;255;255;255}███{#38;2;27;253;156}███{#38;2;252;62;56}███{#}"
+    },
+    {
+      "type": "custom",
+      "format": "{#38;2;27;253;156}●{#} {#38;2;202;202;202}LINK ESTABLISHED // ACCESS GRANTED{#}"
+    }
   ]
 }

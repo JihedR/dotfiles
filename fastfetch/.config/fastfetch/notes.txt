@@ -1,0 +1,14 @@
+Reconfigured their status bar 4 times this week
+Has never successfully resumed from suspend
+Uses Arch, btw
+Known associate of DedSec
+Restarts waybar more than they restart their PC
+Prefers square corners and 1px borders
+Rewrote dotfiles instead of sleeping
+Talks to their terminal more than to people
+Former owner of a SATA cable routed under a GPU
+Won a "hi" competition (result disputed by Hi)
+Keeps a Timeshift snapshot for every bad idea
+Moderate caffeine dependency
+Considers rounded corners a security risk
+Has opened the GRUB editor at least once in a panic
